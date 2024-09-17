@@ -14,12 +14,13 @@ Distributed processing started with Hadoop Map-Reduce. Limitation of Map-Reduce 
 5. MapReduce primarily operates on disk, which can be inefficient for certain types of data processing tasks.
 
 **Spark Advantages:**
-1. In-Memory Processing: Spark can process data in memory, significantly improving performance for many types of workloads. It is 100 times faster than MapReduce.
+1. In-Memory Processing: Spark can process data in memory, significantly improving performance for many types of workloads. It is 100 times faster than MapReduce. Spark can process data stored in disk as well, that would be slower compared to in-memory processing.
 2. DAG Execution: Spark's Directed Acyclic Graph (DAG) execution model allows for more flexible and efficient workflow management.
 3. Fault Tolerance: Spark provides robust fault tolerance mechanisms to ensure data integrity and minimize downtime.
 4. Simplified APIs: Spark offers a unified API for various data processing tasks, including SQL, RDDs, and DataFrames.
 5. Spark can handle real time data as well as batch data processing.
 6. Spark provide high level APIs in Scala, Java, Python and R.
+7. Lazy Evaluation: Evaluation on RDD only occur when some action (write/print/count/collect) occurs.
 
 ## Spark Ecosystem
 1. **Storage:** Spark doesn't have storage system of its own. Spark can use HDFS, GCS, S3, Azure Blob Storage.
@@ -40,10 +41,43 @@ It is a group of data that can be stored in-memory on worker nodes. This is the 
 
 **Features:**
 - Immutable: RDD is immutable. Any transformation creates a new RDD.
-- Lazy Evaluation: Evaluation on RDD only occur when some action (write/print/count/collect) occurs.
 - Persistence: RDDs can be persist whic allows to reuse it multiple times.
 - Operations: 2 kinds of operations are possible on RDD. Transformation (It creates a new RDD), Action (It return value to driver program or external system).
 - Partitions: Data is distributed into partitions across cluster nodes. Number of partitions is same as number of blocks in file system when spark read the data. After that user can manage data distribution and partitions.
+
+### Operations:
+
+#### Transformations
+It is an operation on a RDD to create a new RDD. 
+2 categories:
+1. **Narrow Transformation:**
+  - One partition is processed and it creates a new partition.
+  - No data shuffle is required.
+  - Like: Map(), Filter().
+2. **Wide Transformation:**
+  - Multiple partitions are required to process the data.
+  - Data shuffle across partitions occurs.
+  - Like Join(), groupby() etc.
+
+#### Actions
+It is an operation which provide a non-RDD output. Output is sent to driver program or write data to external system.
+Action trigger the execution flow (DAG).
+- Collect()
+- Count()
+-Take()
+- Write()
+
+Note: Reading the data is an initial step in the DAG. It is neither action nor transformation.
+
+### DAG
+Directed Acyclic Graph also called lineage graph. We cannot have cycle in the graph.
+- Each node in the graph is an RDD. Arrow is a transformations in the graph.
+- DAG is optimized by spark to create stages.
+
+**Job:** Job represent each action in spark application. Each job has a DAG which reads data from source, perform certain actions and generate output. 
+**Stage:** Stage is a sequence of transformations that can be performed without data shuffling. Each job is split into multiple stages. 
+**Task:** Task is executed per partition per stage. 
+
 
 
 
