@@ -79,8 +79,44 @@ Directed Acyclic Graph also called lineage graph. We cannot have cycle in the gr
 **Task:** Task is executed per partition per stage. 
 
 
+### Architecture
+
+1. **Driver Program**  
+  It runs the main() function of spark application.
+
+3. **Spark Context**  
+   This is the entry point of the spark for user. 
+  
+4. **Cluster Manager**  
+  Manages the cluster resources.
+
+5. **Executer**  
+   Executers are present in worker nodes. Executer provide the space in Memory to store the partitinos and run the task on those partitions.
+
+6. **DAG Scheduler**
+  Responsible to optimize the DAG and define stages. It then submit the stages to task scheduler. 
+
+7. **Task Scheduler**
+  Responsible to launch tasks on executer. 
+
+8. **Master**
+  It is the base of standlone mode spark. This is not applicable when spark is running on cluster.
+
+10. **Worker**
+  This is also specific to standalone mode spark. Each worker has multiple executers.
 
 
+### Depolyment Mode
+
+1. **Client Mode**
+  - Spark session is running on users local machine. Jobs are still running on cluster.
+  - This makes interactive development possible.
+  
+2. **Cluster Mode**
+  - User just submit the job and spark session is running inside cluster.
+
+3. **Standalone Mode**
+  - Spark is running in one single machine where all master and workers and running in single machine.
 
 
 
