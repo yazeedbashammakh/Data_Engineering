@@ -64,7 +64,7 @@ It is an operation which provide a non-RDD output. Output is sent to driver prog
 Action trigger the execution flow (DAG).
 - Collect()
 - Count()
--Take()
+- Take()
 - Write()
 
 Note: Reading the data is an initial step in the DAG. It is neither action nor transformation.
@@ -75,7 +75,9 @@ Directed Acyclic Graph also called lineage graph. We cannot have cycle in the gr
 - DAG is optimized by spark to create stages.
 
 **Job:** Job represent each action in spark application. Each job has a DAG which reads data from source, perform certain actions and generate output. 
+
 **Stage:** Stage is a sequence of transformations that can be performed without data shuffling. Each job is split into multiple stages. 
+
 **Task:** Task is executed per partition per stage. 
 
 
@@ -85,10 +87,10 @@ Directed Acyclic Graph also called lineage graph. We cannot have cycle in the gr
   It runs the main() function of spark application.
 
 3. **Spark Context**  
-   This is the entry point of the spark for user. 
+   This is the entry point of the spark for user in spark 1.0. 
   
-4. **Cluster Manager**  
-  Manages the cluster resources.
+4. **Spark Session**  
+    This is the entry point of the spark for user in spark 2.0. It also provide access to spark context.
 
 5. **Executer**  
    Executers are present in worker nodes. Executer provide the space in Memory to store the partitinos and run the task on those partitions.
@@ -119,5 +121,51 @@ Directed Acyclic Graph also called lineage graph. We cannot have cycle in the gr
   - Spark is running in one single machine where all master and workers and running in single machine.
 
 
+### Cache Data
+Some data can be used multiple times in our process. We can cache it so spark doesn't create it again from source.
+
+1. **Cache()**  
+  - Stores the data in memory. Eg: ds.cache()
+  - If memory is filled then spill the data on disks.
+
+2. **Persits(storageLevel)**
+  - Provide storageLevel, where we want to store the data.
+
+3. **Storage Levels**
+
+
+| Storage Level | In-Memory | On Disk | Serialization | Replication |
+| -------- | ------- | ------- | ------- | ------- |
+| DISK_ONLY | No | Yes | No | No |
+| DISK_ONLY_2| No | Yes | No | Yes |
+| MEMORY_AND_DISK| Yes | Yes | No | No |
+| MEMORY_AND_DISK_2| Yes | Yes | No | Yes |
+| MEMORY_AND_DISK_SER| Yes | Yes | Yes | No |
+| MEMORY_AND_DISK_SER_2| Yes | Yes | Yes | Yes |
+| MEMORY_ONLY| Yes | No | No | No |
+| MEMORY_ONLY_2| Yes | No | No | Yes |
+| MEMORY_ONLY_SER| Yes | No | Yes | No |
+| MEMORY_ONLY_SER_2| Yes | No | Yes | Yes |
+
+
+- Serialization reduces the required storage space.
+- Replication stores the data in 2 nodes.
+
+4. **Data Skewness**
+When data is not evenly distributed across partitions. Maybe one key contains most of the records which becomes slowest step in the execution and it increases overall job time. 
+
+Methods to work with skewed data:
+- Increase of number of partitions:
+
+  It can help to distribute data more evenly, However it can increase the overhead of managing more partitions.
+  
+- Use reduceByKey instead of groupByKey:
+  reduceByKey performs local aggregation before shuffling. 
+
+- Separate processing of skewed data:
+  Separate the keys which are causing skewness and process them separately.   
+  
+- Salting:
+  In this method, we add a random component to a skewed key to create additional unique key. After performing the operation, this can be dropped. 
 
 
