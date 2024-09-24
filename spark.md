@@ -151,7 +151,8 @@ Some data can be used multiple times in our process. We can cache it so spark do
 - Serialization reduces the required storage space.
 - Replication stores the data in 2 nodes.
 
-4. **Data Skewness**
+ 
+### Data Skewness
 When data is not evenly distributed across partitions. Maybe one key contains most of the records which becomes slowest step in the execution and it increases overall job time. 
 
 Methods to work with skewed data:
@@ -167,5 +168,23 @@ Methods to work with skewed data:
   
 - Salting:
   In this method, we add a random component to a skewed key to create additional unique key. After performing the operation, this can be dropped. 
+
+### Manage partitions in spark
+
+1.Configuration
+  - `spark.default.parallelism`: This define the default number of partitions for the newly created dataframe. If data is being read from a distributed file system, then initial number of partitions would be same as number of blocks in source.
+
+2. Repartition()
+  - This function can be helpful to increase or decrease the number of partitions. Data is shuffled and new partitions are balanced.
+  - It can also be helpful to distribute data based on few columns so records with certain value would end up in one partition.
+
+3. Coalesce()
+  - This is used to reduce the partition count.
+  - It avoid the full shuffle and new partitions are not necessarily balanced. It can cause skewness in partitions.
+
+
+### RDD, Dataframes and Datasets
+
+
 
 
