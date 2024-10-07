@@ -208,45 +208,44 @@ Spark has 2 kinds of processes, which both has memory configuration:
   - "spark.driver.maxResultSize" define the mas result size which will be provided to driver program from executors.
 
 
+
 ### **2. Executor Process**
-  - Each node has "yarn.nodemanager.resource.memory-mb" amount of memory available for spark to distribute among exectors.
-  - Each executer can have maximum memory limit till "yarn.scheduler.maximum-allocation-mb".
-  - Executer memory is devided into:
+- Each node has "yarn.nodemanager.resource.memory-mb" amount of memory available for spark to distribute among exectors.
+- Each executer can have maximum memory limit till "yarn.scheduler.maximum-allocation-mb".
+- Executer memory is devided into:
 
-  **1. Heap Memory:**
-    - This is where spark run its operations and store data. 
-    - Each executor memory is configured by "spark.executor.memory".
-    - It is further devided into:
+**1. Heap Memory:**
+- This is where spark run its operations and store 
+- Each executor memory is configured by "spark.executor.memory".
+- It is further devided into:
+- **Reserved Memory:**
+    - This ensures basic JVM lelvel proceses doesn't get stuck. It is not configurable. Generally, it is fixed around 300MB (reserved_system_memory_bytes). 
+- **Usable Memory**  
+    - This is (executor memory - reserved memory). It is further sub-devided into:
+    - **User Memory**
+        - (1-spark.memory.fraction) of usable memory.
+        - It is used by custom user code (e.g., large arrays, use user-defined functions, or work with external libraries that load objects into memory).
+    - **Execution Memory:**    
+        - Used for execution, shuffle, joins, sorts, aggregations etc.    
+    - **Storage Memory:**
+        - Used for caching, broadcasting etc. It is configured using "spark.memory.storageFraction".
 
-      - **Reserved Memory:**
-          - This ensures basic JVM lelvel proceses doesn't get stuck. It is not configurable. Generally, it is fixed around 300MB (reserved_system_memory_bytes). 
-
-      - **Usable Memory**  
-          - This is (executor memory - reserved memory). It is further sub-devided into:
-
-          - **User Memory**
-             - (1-spark.memory.fraction) of usable memory.
-             - It is used by custom user code (e.g., large arrays, use user-defined functions, or work with external libraries that load objects into memory).
-
-          - **Execution Memory:**    
-              - Used for execution, shuffle, joins, sorts, aggregations etc.
-    
-          - **Storage Memory:**
-              - Used for caching, broadcasting etc. It is configured using "spark.memory.storageFraction".
-
-          > Execution memory and storage memory combined is configured using spark.memory.fraction. Generally, this is 0.6 
-          > Dynamic memory occupancy is where storage and execution memory is assigned as per needs. Execution memory is the priority. If execution needs more memory, it can allocate even from storage memory and when execution doesn't needs even assigned memory then executor memory can be assigned for storage as well. 
+        > Execution memory and storage memory combined is configured using spark.memory.fraction. Generally, this is 0.6 
+        > Dynamic memory occupancy is where storage and execution memory is assigned as per needs. Execution memory is the priority. If execution needs more memory, it can allocate even from storage memory and when execution doesn't needs even assigned memory then executor memory can be assigned for storage as well. 
 
 
-  **2. Off-Heap Memory:**
-    - This memory is outside of JVM garbage collection control. This can be useful for large datasets, reducing the frequency of GC operations
-    - By default it is disabled. It can be enabled using "spark.executor.memoryOffHeap.enabled" and can be configured using "spark.executor.memoryOffHeap.size".
+2. **Off-Heap Memory:**
 
-  **3. Overhead Memory:**
-    - This is outside of JVM Heap memory. It include Off-Heap Memory, memory used for native processes like Hadoop or python processes. 
-    - It is by default 10% of executor memory with a minimum of 384MB.
-    - This can be configured using "spark.executor.memoryOverhead" (absolute size) or "spark.executor.memoryOverheadFactor" (fraction of executor memory).
-    - 
+- This memory is outside of JVM garbage collection control. This can be useful for large datasets, reducing the frequency of GC operations
+- By default it is disabled. It can be enabled using "spark.executor.memoryOffHeap.enabled" and can be configured using "spark.executor.memoryOffHeap.size".
+
+3. **Overhead Memory:**
+
+- This is outside of JVM Heap memory. It include Off-Heap Memory, memory used for native processes like Hadoop or python processes.
+- It is by default 10% of executor memory with a minimum of 384MB.
+- This can be configured using "spark.executor.memoryOverhead" (absolute size) or "spark.executor.memoryOverheadFactor" (fraction of executor memory).
+
+
 
 
 
