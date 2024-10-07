@@ -185,6 +185,44 @@ Methods to work with skewed data:
 
 ### RDD, Dataframes and Datasets
 
+| Criteria | RDD | Dataframe | Dataset |
+| -------- | -------- | ------- | ------- |
+| Abstraction Level | Lowest level access to data  | On top of RDD | On top of dataframe |
+| Schema | No | Yes | Yes |
+| Type Safety | No | No | Yes | 
+| Optimization | No | Catalyst Optimizer | Catalyst Optimizer |
+
+
+> RDD is lowest level of data access in spark. It doesn;t have schema on data and without any in-built optimization.
+> Dataframe is on top of RDD with defined schema. It is optimized using catalyst optimizer.
+> Dataset is similar to dataframe except it provides compile-time type safety.
+
+
+## Memory Management 
+
+Spark has 2 kinds of processes, which both has memory configuration:
+
+### **1. Driver Process**
+  - This is a single process running in master node.
+  - "--driver-memory" option provide the driver memory configuration.
+  - "spark.driver.maxResultSize" define the mas result size which will be provided to driver program from executers.
+
+
+### **2. Executor Process**
+  - Each node has "yarn.nodemanager.resource.memory-mb" amount of memory available for spark to distribute among execters.
+  - Each executer can have maximum memory limit till "yarn.scheduler.maximum-allocation-mb".
+  - Executer memory is devided into:
+  **1. Heap Memory:**
+    - This is where spark run its operations and store data. It is configured by "spark.executor.memory"
+    - It is further devided into:
+      - Execution Memory:  Used for execution, shuffle, joins, sorts, aggregations etc.
+      - Storage Memory:  Used for caching, broadcasting etc.
+  **2. Off-Heap Memory:**
+    - By default it is disabled. It can be enabled using "spark.executor.memoryOffHeap.enabled" and can be configured using "spark.executor.memoryOffHeap.size".
+  
+  **3. Overhead Memory (Non-Heap Memory):**
+    - This is outside of the executor heap memory. It is by default 10% of executor memory with a minimum of 384MB.
+    - This can be configured using "spark.executor.memoryOverhead" (absolute size) or "spark.executor.memoryOverheadFactor" (fraction of executor memory).
 
 
 
