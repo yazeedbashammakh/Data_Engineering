@@ -212,6 +212,7 @@ Spark has 2 kinds of processes, which both has memory configuration:
 ### **2. Executor Process**
 - Each node has "yarn.nodemanager.resource.memory-mb" amount of memory available for spark to distribute among exectors.
 - Each executer can have maximum memory limit till "yarn.scheduler.maximum-allocation-mb".
+- Each executor can have around 5 cores as recommended. This can be adjusted if required.
 - Executer memory is devided into:
 
 **1. Heap Memory:**
@@ -245,8 +246,61 @@ Spark has 2 kinds of processes, which both has memory configuration:
 - It is by default 10% of executor memory with a minimum of 384MB.
 - This can be configured using "spark.executor.memoryOverhead" (absolute size) or "spark.executor.memoryOverheadFactor" (fraction of executor memory).
 
+## Broadcasting and Accumulators 
+
+### Broadcast variable
+- These are read only shared variables that are cached on each workder node.
+
+### Accumulators
+- These are variables which are add only across to accumulate the results from each executors.
+- This help to implement counters and sums efficiently.
 
 
+## Handle Failures in spark
+
+### Driver Failures
+- It driver fails then application will be terminated as this is the main entry point of the application.
+- All executors are released as driver fails.
+
+### Executor Failures
+- Executor can fail due to machine error, OOM error.
+- Failure of executor doesn't terminate the spark application. Spark can reschedule the tasks to another executor.
+- If same task gets failed for 4 time (default). Spark will terminate the application.
+
+### Failure due to OOM
+- Driver OOM error:
+  - Large collect operations.
+  - Large Broadcast variable.
+  - Improper Memory configuration.
+- Executor OOM error:
+  - Large task results.
+  - Large RDD and dataframe operations.
+  - Perstant RDDs and dataframes.
+  - Improper executor memory configuration.
+
+### Code level optimizations
+- Use dataframe or datasets instead of RDDs.
+- Leverage broadcasting.
+- Avoid shuffling if possible: Use reduceByKey or aggregateByKey instead of groupByKey.
+- Avoid collecting large data.
+- Repartitioning and coalescing: Manage partitions as required.
+- Persistence and cache wisely.
+
+### Resource level optimizations
+- Tune memory parameters: driver memory, executor memory, memory fraction.
+- Control parallelism: default parallelism. shuffle partitions.
+- Dynamic allocation: enable it so number of executors can be adjusted dynamically.
+- Use garbage collection.
+- Use serialization as needed. 
+
+
+
+
+
+
+
+
+ 
 
 
 
