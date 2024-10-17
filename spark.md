@@ -294,6 +294,34 @@ Spark has 2 kinds of processes, which both has memory configuration:
 - Use serialization as needed. 
 
 
+# Pyspark Codebase
+
+- pyspark
+|- core
+    |- broadcast.py
+    |- rdd.py
+    |- context.py
+|- sql
+    |- functions
+    |    |-   
+    |- session.py
+    |- udf.py
+    |- window.py
+|- streaming
+|- errors
+|- serializers.py
+|- util.py
+|- accumulators.py
+|- conf.py
+
+
+
+
+
+
+
+
+
 
 
 
