@@ -315,6 +315,49 @@ Spark has 2 kinds of processes, which both has memory configuration:
 |- conf.py
 
 
+# Spark Web UI
+
+
+# Spark Structured Streaming
+
+## What is streaming
+- Data is processed as soon as it gets generated. Continuous flow of data comes and processed.
+
+Features:
+- Real time processing
+- Continuous flow of data
+- Windowing: Stream is broken into chunks of time.
+
+Componenets:
+1. Event Producer
+2. Stream Queue
+3. Stream Processing Engine
+4. Data Storage
+
+
+## Spark Structured Streaming
+- It is scalable, fault-tolerant stream processing engine built on top of spark sql engine.
+
+Features:
+- Easy to use: Similar to dataframe, dataset high level APIs in scala, java, python and R.
+- Event Time Processing: It can perform window base operations. It can handle late data.
+- Fault tolerant: It means any operatoin we perform on streaming data will provide the same result even after failure.
+- Integration: It is integrated with other spark ecosystem and other data sources as well as it can write output to file systems, databases, and live dashboards.
+
+
+Output Mode:
+- Complete Mode:
+- Append Mode:
+- Update Mode:
+
+### Manage State
+- Scale the resources to keep the state in memory.
+- State expiration: purge the state data after certain time if not required.
+- Aggregation: Keep the stored state data small. Aggregate if possible.
+- Checkpoint the state to make system fault tolerant.
+- State store compressoin: Spark can compress the state data to reduce the storage size.
+
+
 
 
 
